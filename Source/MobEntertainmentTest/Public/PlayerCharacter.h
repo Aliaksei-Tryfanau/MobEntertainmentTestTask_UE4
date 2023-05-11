@@ -17,6 +17,7 @@ public:
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	void Grapple();
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* PlayerCamera;

@@ -3,6 +3,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlayerCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -11,7 +13,7 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 
     PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     PlayerCamera->SetupAttachment(RootComponent);
-    PlayerCamera->bUsePawnControlRotation = false;
+    PlayerCamera->bUsePawnControlRotation = true;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -35,6 +37,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::Jump);
     PlayerInputComponent->BindAxis("Turn", this, &APlayerCharacter::Turn);
     PlayerInputComponent->BindAxis("LookUp", this, &APlayerCharacter::LookUp);
+    PlayerInputComponent->BindAction("Grapple", IE_Pressed, this, &APlayerCharacter::Grapple);
 }
 
 void APlayerCharacter::MoveForward(float Value)
@@ -61,10 +64,40 @@ void APlayerCharacter::MoveRight(float Value)
 
 void APlayerCharacter::Turn(float Value)
 {
-    AddControllerYawInput(Value * TurnRate * GetWorld()->GetDeltaSeconds());
+    if (Value != 0.0f)
+    {
+        AddControllerYawInput(Value * TurnRate * GetWorld()->GetDeltaSeconds());
+    }
 }
 
 void APlayerCharacter::LookUp(float Value)
 {
-    AddControllerPitchInput(Value * LookUpRate * GetWorld()->GetDeltaSeconds());
+    if (Value != 0.0f)
+    {
+        AddControllerPitchInput(Value * LookUpRate * GetWorld()->GetDeltaSeconds());
+    }
+}
+
+void APlayerCharacter::Grapple()
+{
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+    if (!PlayerController)
+    {
+        return;
+    }
+
+    int32 SizeX;
+    int32 SizeY;
+    PlayerController->GetViewportSize(SizeX, SizeY);
+    FVector2D ScreenCenter = FVector2D(SizeX, SizeY) / 2.f;
+    FVector WorldLocation, WorldDirection;
+    PlayerController->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection);
+    FHitResult HitResult;
+    const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 10000.f, ECC_Visibility);
+    DrawDebugLine(GetWorld(), WorldLocation, WorldLocation + WorldDirection * 10000.f, FColor::Red, false, 10.0f, 0, 1.0f);
+
+    if (bHit)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Hit"));
+    }
 }
