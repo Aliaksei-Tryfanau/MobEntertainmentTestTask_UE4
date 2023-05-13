@@ -29,7 +29,7 @@ void UPlayerCharacterMovementComponent::TryGrapple(FVector GrappleLocation)
 	if (MovementMode != EMovementMode::MOVE_Custom && CustomMovementMode != CMOVE_Grapple)
 	{
 		GrappleTargetLocation = GrappleLocation;
-		Velocity = (GrappleLocation - UpdatedComponent->GetComponentLocation()).GetSafeNormal() * GrappleSpeed;
+		Velocity = (GrappleTargetLocation - UpdatedComponent->GetComponentLocation()).GetSafeNormal() * GrappleSpeed;
 		SetMovementMode(MOVE_Custom, CMOVE_Grapple);
 	}
 	else
@@ -45,8 +45,8 @@ void UPlayerCharacterMovementComponent::GrappleToSurface(float deltaTime, int32 
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("Player location %s, targete location %s, target vector: %s"), *UpdatedComponent->GetComponentLocation().ToString(), 
-		*GrappleTargetLocation.ToString(), *(GrappleTargetLocation - UpdatedComponent->GetComponentLocation()).ToString());
+	//UE_LOG(LogTemp, Log, TEXT("Player location %s, targete location %s, target vector: %s"), *UpdatedComponent->GetComponentLocation().ToString(), 
+	//	*GrappleTargetLocation.ToString(), *(GrappleTargetLocation - UpdatedComponent->GetComponentLocation()).ToString());
 	FVector Direction = GrappleTargetLocation - UpdatedComponent->GetComponentLocation();
 	FVector XYDirection = FVector(Direction.X, Direction.Y, 0.f);
 
@@ -57,11 +57,7 @@ void UPlayerCharacterMovementComponent::GrappleToSurface(float deltaTime, int32 
 		return;
 	}
 
-	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
-	{
-		CalcVelocity(deltaTime, 0.f, false, GetMaxBrakingDeceleration());
-	}
-
+	CalcVelocity(deltaTime, 0.f, false, GetMaxBrakingDeceleration());
 	Iterations++;
 	bJustTeleported = false;
 	FVector OldLocation = UpdatedComponent->GetComponentLocation();
@@ -75,6 +71,10 @@ void UPlayerCharacterMovementComponent::GrappleToSurface(float deltaTime, int32 
 		HandleImpact(Hit, deltaTime, Adjusted);
 		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
 	}
+	else
+	{
+		Velocity = (GrappleTargetLocation - UpdatedComponent->GetComponentLocation()).GetSafeNormal() * GrappleSpeed;
+	}
 
 	Direction = GrappleTargetLocation - UpdatedComponent->GetComponentLocation();
 	XYDirection = FVector(Direction.X, Direction.Y, 0.f);
@@ -83,10 +83,10 @@ void UPlayerCharacterMovementComponent::GrappleToSurface(float deltaTime, int32 
 		ExitGrapple();
 	}
 
-	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
-	{
-		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
-	}
+	//if (!bJustTeleported)
+	//{
+	//	Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+	//}
 }
 
 void UPlayerCharacterMovementComponent::StickToSurface(float deltaTime, int32 Iterations)

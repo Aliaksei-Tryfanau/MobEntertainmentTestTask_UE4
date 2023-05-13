@@ -9,6 +9,7 @@ enum ECustomMovementMode
 {
 	CMOVE_None			UMETA(Hidden),
 	CMOVE_Grapple		UMETA(DisplayName = "Grapple"),
+	CMOVE_Hanging		UMETA(DisplayName = "Hanging"),
 	CMOVE_MAX			UMETA(Hidden),
 };
 

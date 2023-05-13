@@ -25,10 +25,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* PlayerCamera;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	float TurnRate = 45.f;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	float LookUpRate = 45.f;
 
 protected:
