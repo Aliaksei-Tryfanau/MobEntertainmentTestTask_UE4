@@ -1,5 +1,6 @@
 #include "PlayerCharacter.h"
 #include "PlayerCharacterMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
@@ -9,6 +10,8 @@
 APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UPlayerCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+    PlayerCharacterMovementComponent = Cast<UPlayerCharacterMovementComponent>(GetCharacterMovement());
+    PlayerCharacterMovementComponent->SetIsReplicated(true);
 	PrimaryActorTick.bCanEverTick = true;
 
     PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -99,5 +102,6 @@ void APlayerCharacter::Grapple()
     if (bHit)
     {
         UE_LOG(LogTemp, Warning, TEXT("Hit"));
+        PlayerCharacterMovementComponent->TryGrapple(HitResult.Location);
     }
 }

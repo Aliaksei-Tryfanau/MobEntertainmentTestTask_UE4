@@ -19,6 +19,9 @@ public:
 	void LookUp(float Value);
 	void Grapple();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) 
+	class UPlayerCharacterMovementComponent* PlayerCharacterMovementComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* PlayerCamera;
 
