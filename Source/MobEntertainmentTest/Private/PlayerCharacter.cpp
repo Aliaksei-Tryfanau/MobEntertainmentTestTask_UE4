@@ -36,7 +36,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
     PlayerInputComponent->BindAxis("Forward", this, &APlayerCharacter::MoveForward);
     PlayerInputComponent->BindAxis("Right", this, &APlayerCharacter::MoveRight);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::Jump);
     PlayerInputComponent->BindAxis("Turn", this, &APlayerCharacter::Turn);
     PlayerInputComponent->BindAxis("LookUp", this, &APlayerCharacter::LookUp);
     PlayerInputComponent->BindAction("Grapple", IE_Pressed, this, &APlayerCharacter::Grapple);
@@ -96,10 +95,14 @@ void APlayerCharacter::Grapple()
     PlayerController->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection);
     FHitResult HitResult;
     const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 10000.f, ECC_Visibility);
-    DrawDebugLine(GetWorld(), WorldLocation, WorldLocation + WorldDirection * 10000.f, FColor::Red, false, 10.0f, 0, 1.0f);
+    //DrawDebugLine(GetWorld(), WorldLocation, WorldLocation + WorldDirection * 10000.f, FColor::Red, false, 10.0f, 0, 1.0f);
 
     if (bHit)
     {
         PlayerCharacterMovementComponent->TryGrapple(HitResult.Location);
+    }
+    else
+    {
+        PlayerCharacterMovementComponent->TryDisconnect();
     }
 }

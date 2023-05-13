@@ -20,6 +20,7 @@ class MOBENTERTAINMENTTEST_API UPlayerCharacterMovementComponent : public UChara
 
 public:
 	void TryGrapple(FVector GrappleLocation);
+	void TryDisconnect();
 
 	UPROPERTY() 
 	class APlayerCharacter* PlayerCharacter;
@@ -45,6 +46,5 @@ private:
 	float TargetDistance;
 
 	void GrappleToSurface(float deltaTime, int32 Iterations);
-	void StickToSurface(float deltaTime, int32 Iterations);
 	void ExitGrapple();
 };

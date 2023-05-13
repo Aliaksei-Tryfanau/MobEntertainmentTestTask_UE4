@@ -34,7 +34,15 @@ void UPlayerCharacterMovementComponent::TryGrapple(FVector GrappleLocation)
 	}
 	else
 	{
-		//detach from wall?
+		TryDisconnect();
+	}
+}
+
+void UPlayerCharacterMovementComponent::TryDisconnect()
+{
+	if (MovementMode == EMovementMode::MOVE_Custom && CustomMovementMode == CMOVE_Hanging)
+	{
+		SetMovementMode(MOVE_Falling);
 	}
 }
 
@@ -82,16 +90,6 @@ void UPlayerCharacterMovementComponent::GrappleToSurface(float deltaTime, int32 
 	{
 		ExitGrapple();
 	}
-
-	//if (!bJustTeleported)
-	//{
-	//	Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
-	//}
-}
-
-void UPlayerCharacterMovementComponent::StickToSurface(float deltaTime, int32 Iterations)
-{
-
 }
 
 void UPlayerCharacterMovementComponent::ExitGrapple()
@@ -99,5 +97,5 @@ void UPlayerCharacterMovementComponent::ExitGrapple()
 	FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
 	FHitResult Hit;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
-	SetMovementMode(MOVE_Falling);
+	SetMovementMode(MOVE_Custom, CMOVE_Hanging);
 }
