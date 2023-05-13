@@ -2,7 +2,6 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
@@ -45,7 +44,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::MoveForward(float Value)
 {
-    if (Value != 0.0f)
+    if (Value != 0.0f && PlayerCharacterMovementComponent->MovementMode != MOVE_Custom)
     {
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -56,7 +55,7 @@ void APlayerCharacter::MoveForward(float Value)
 
 void APlayerCharacter::MoveRight(float Value)
 {
-    if (Value != 0.0f)
+    if (Value != 0.0f && PlayerCharacterMovementComponent->MovementMode != MOVE_Custom)
     {
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -101,7 +100,6 @@ void APlayerCharacter::Grapple()
 
     if (bHit)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Hit"));
         PlayerCharacterMovementComponent->TryGrapple(HitResult.Location);
     }
 }
