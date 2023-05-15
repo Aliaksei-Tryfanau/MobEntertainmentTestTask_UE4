@@ -1,6 +1,7 @@
 #include "PlayerCharacterMovementComponent.h"
 #include "PlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void UPlayerCharacterMovementComponent::InitializeComponent()
 {
@@ -24,7 +25,7 @@ void UPlayerCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterat
 	}
 }
 
-void UPlayerCharacterMovementComponent::TryGrapple(FVector GrappleLocation)
+void UPlayerCharacterMovementComponent::TryGrapple_Implementation(FVector GrappleLocation)
 {
 	if (MovementMode != EMovementMode::MOVE_Custom && CustomMovementMode != CMOVE_Grapple)
 	{
@@ -38,7 +39,7 @@ void UPlayerCharacterMovementComponent::TryGrapple(FVector GrappleLocation)
 	}
 }
 
-void UPlayerCharacterMovementComponent::TryDisconnect()
+void UPlayerCharacterMovementComponent::TryDisconnect_Implementation()
 {
 	if (MovementMode == EMovementMode::MOVE_Custom && CustomMovementMode == CMOVE_Hanging)
 	{
@@ -98,4 +99,12 @@ void UPlayerCharacterMovementComponent::ExitGrapple()
 	FHitResult Hit;
 	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, true, Hit);
 	SetMovementMode(MOVE_Custom, CMOVE_Hanging);
+}
+
+void UPlayerCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerCharacterMovementComponent, GrappleTargetLocation);
+	DOREPLIFETIME(UPlayerCharacterMovementComponent, TargetDistance);
 }

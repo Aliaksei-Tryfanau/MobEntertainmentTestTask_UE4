@@ -19,7 +19,9 @@ class MOBENTERTAINMENTTEST_API UPlayerCharacterMovementComponent : public UChara
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(Server, Reliable)
 	void TryGrapple(FVector GrappleLocation);
+	UFUNCTION(Server, Reliable)
 	void TryDisconnect();
 
 	UPROPERTY() 
@@ -34,15 +36,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Grapple)
 	float GrappleOffset = 10.f;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	virtual void InitializeComponent() override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 
 private:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FVector GrappleTargetLocation;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	float TargetDistance;
 
 	void GrappleToSurface(float deltaTime, int32 Iterations);
